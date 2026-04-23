@@ -1,0 +1,106 @@
+﻿# Análise de Erros no Código debug.py
+
+## Identificação dos Erros
+
+O código `debug.py` contém vários erros de sintaxe e lógica que impedem sua execução correta. Abaixo, listo os principais erros identificados:
+
+1. **Erro de sintaxe na linha de input para `item1`**:
+   - Código: `item1 = float(input(Preço do item 1? ))`
+   - Problema: Falta de aspas na string passada para `input()`.
+
+2. **Erro de tipo de dados para `desconto_cupom`**:
+   - Código: `desconto_cupom = (input("Você tem um cupom de desconto? (Digite o percentual ou 0): "))`
+   - Problema: `input()` retorna uma string, mas o código tenta usá-la como número em operações aritméticas e comparações.
+
+3. **Erro de f-string na impressão do Item 2**:
+   - Código: `print(" Item 2:        R$ {total_item2:.2f}")`
+   - Problema: Falta o prefixo `f` para tornar a string uma f-string.
+
+4. **Erro de indentação no bloco `if`**:
+   - Código: `if desconto_cupom > 0: print(f" Desconto ({desconto_cupom:.0f}%): -R$ {desconto:.2f}")`
+   - Problema: O `print` não está indentado dentro do bloco `if`, causando erro de sintaxe.
+
+5. **Erro de formatação em string**:
+   - Código: `print(f" Desconto ({desconto_cupom:.0f}%): -R$ {desconto:.2f}")`
+   - Problema: `desconto_cupom` é uma string, e `.0f` é um especificador para floats, não strings.
+
+6. **Possível redundância na formatação do total**:
+   - Código: `print(f" TOTAL:         R$ {round(total, 2):.2f}")`
+   - Problema: `round(total, 2)` já arredonda para 2 casas decimais, e `.2f` faz o mesmo, tornando redundante.
+
+## Explicação das Causas
+
+1. **Sintaxe incorreta**: Em Python, strings literais devem estar entre aspas simples ou duplas. A ausência de aspas causa um erro de sintaxe porque o interpretador não reconhece "Preço" como uma string válida.
+
+2. **Tipo de dados incorreto**: A função `input()` sempre retorna uma string, independentemente do que o usuário digite. Quando o código tenta dividir uma string por um número (`desconto_cupom / 100`) ou compará-la com um inteiro (`desconto_cupom > 0`), ocorre um `TypeError` porque operações aritméticas e comparações não são suportadas entre strings e números sem conversão explícita.
+
+3. **Falta de prefixo f-string**: F-strings em Python requerem o prefixo `f` antes da string para que as expressões entre chaves sejam avaliadas. Sem isso, `{total_item2:.2f}` é tratado como texto literal.
+
+4. **Indentação incorreta**: Em Python, blocos de código (como o corpo de um `if`) devem ser indentados. A falta de indentação faz com que o `print` seja executado fora do bloco condicional, causando erro de sintaxe.
+
+5. **Especificador de formato inadequado**: O especificador `.0f` é usado para formatar números floats, não strings. Aplicá-lo a uma string resulta em erro.
+
+6. **Redundância**: Embora não cause erro, usar `round()` e `.2f` simultaneamente é desnecessário, pois ambos controlam a precisão decimal.
+
+## Correção do Código
+
+Aqui está o código corrigido:
+
+```python
+#                                      CÓDIGO CORRIGIDO                           
+# ENTRADA DE DADOS
+cliente = input("Qual é seu nome? ")
+
+qtd1 = int(input("Quantidade do item 1: "))
+item1 = float(input("Preço do item 1? "))
+
+qtd2 = int(input("Quantidade do item 2: "))
+item2 = float(input("Preço do item 2? "))
+
+qtd3 = int(input("Quantidade do item 3: "))
+item3 = float(input("Preço do item 3? "))
+
+# CÁLCULOS DOS ITENS
+total_item1 = qtd1 * item1
+total_item2 = qtd2 * item2
+total_item3 = qtd3 * item3
+
+subtotal = total_item1 + total_item2 + total_item3
+imposto = subtotal * 0.10
+
+# DESCONTO
+desconto_cupom = float(input("Você tem um cupom de desconto? (Digite o percentual ou 0): "))
+desconto = subtotal * (desconto_cupom / 100)
+
+# TOTAL FINAL
+total = subtotal + imposto - desconto
+
+# EXIBIÇÃO
+linha = "=" * 31
+separador = "-" * 31
+
+print(linha)
+print(f" Cliente: {cliente}")
+print(linha)
+print(f" Item 1:        R$ {total_item1:.2f}")
+print(f" Item 2:        R$ {total_item2:.2f}")
+print(f" Item 3:        R$ {total_item3:.2f}")
+print(separador)
+print(f" Subtotal:      R$ {subtotal:.2f}")
+print(f" Imposto (10%): R$ {imposto:.2f}")
+
+if desconto_cupom > 0:
+    print(f" Desconto ({desconto_cupom:.0f}%): -R$ {desconto:.2f}")
+
+print(linha)
+print(f" TOTAL:         R$ {total:.2f}")
+print(linha)
+```
+
+### Mudanças Aplicadas:
+- Adicionadas aspas na string do `input` para `item1`.
+- Convertido `desconto_cupom` para `float` imediatamente após o `input`.
+- Adicionado prefixo `f` na f-string do Item 2.
+- Corrigida a indentação do `print` dentro do `if`.
+- Removido `.0f` de `desconto_cupom` na f-string, pois agora é float.
+- Simplificada a formatação do total para usar apenas `.2f`.
